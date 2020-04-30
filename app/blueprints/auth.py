@@ -6,8 +6,8 @@ from werkzeug.security import (
 )
 from bson.objectid import ObjectId
 
-from flaskr.db.mongo import mongo
-from flaskr.db.user import new_user
+from app.db.mongo import mongo
+from app.db.user import new_user
 
 
 bp = Blueprint('auth', __name__)
