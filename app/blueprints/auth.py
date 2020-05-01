@@ -48,8 +48,8 @@ def login():
 def logout():
     session.clear()
     return {
-        'message': 'User succecfully logged out'
-    } , 200
+        'message': 'User successfully logged out'
+    }, 200
 
 @bp.route('/')
 def hello():
