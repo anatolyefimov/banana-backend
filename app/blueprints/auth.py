@@ -50,3 +50,7 @@ def logout():
     return {
         'message': 'User succecfully logged out'
     } , 200
+
+@bp.route('/')
+def hello():
+    return 'hello', 200
