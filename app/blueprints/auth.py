@@ -14,7 +14,7 @@ bp = Blueprint('auth', __name__)
 
 @bp.route('/register', methods=['POST'])
 def register():
-    data = request.get_json()
+    data = request.get_json(force=True)
     if mongo.db.users.find_one({'username': data['username']}):
         return {
             'message': 'This username is already taken.'
@@ -30,7 +30,7 @@ def register():
 
 @bp.route('/login', methods=['POST'])
 def login():
-    data = request.get_json()
+    data = request.get_json(force=True)
     user = mongo.db.users.find_one({'username': data['username']})
     
     if user is None or  not check_password_hash(user['password'], data['password']):
