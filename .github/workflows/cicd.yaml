@@ -1,0 +1,29 @@
+  
+name: CI/CD
+on:
+    pull_request:
+    push:
+        branches:
+            - master
+
+jobs:
+    lint:
+        name: "Lint and Test"
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v2
+            - name: Set up Python 3.8
+              uses: actions/setup-python@v1
+              with:
+                python-version: 3.8
+            - name: Start MongoDB 4.2
+              uses: supercharge/mongodb-github-action@1.2.0
+              with:
+                mongodb-version: 4.2
+            - run: pip install -r requirements.txt
+              name: Install dependencies
+            - run: pylint ./**/*.py
+              name: Run linting
+            - run: python -m unittest tests/*.py
+              name: Run tests
+           
