@@ -16,6 +16,7 @@ class BananaOnStartTestCase(unittest.TestCase):
             SECRET_KEY='test'
         )
         app_module.mongo.init_app(app_module.app)
+        app_module.mongo.db.users.drop()
         print('init app and new DB banana-test')
 
     def tearDown(self):
@@ -46,15 +47,11 @@ class BananaOnStartTestCase(unittest.TestCase):
         app_module.mongo.db.users.drop()
         self.app.post('/register', json={'username': TEST_USERNAME, 'password': TEST_PASSWORD})
         res = self.app.post('/login', json={'username': TEST_USERNAME, 'password': TEST_PASSWORD})
-        logined_user = res.get_json()
+
+        auth_token = res.data
 
         assert res.status_code == 200
-        assert logined_user['username'] == TEST_USERNAME
-        assert logined_user['isLoggedIn']
-
-        res2 = self.app.get('/logout')
-        assert res2.status_code == 200
-        assert res2.get_json()['message'] == 'User successfully logged out'
+        assert auth_token
 
 
 if __name__ == '__main__':

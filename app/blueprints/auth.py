@@ -1,13 +1,18 @@
+import os
+
 from flask import (
     Blueprint, request, session
 )
+from flask import current_app as app
 from werkzeug.security import (
     check_password_hash, generate_password_hash
 )
+import jwt
 from bson.objectid import ObjectId
 
 from app.db.mongo import mongo
 from app.db.user import new_user
+
 
 
 bp = Blueprint('auth', __name__)
@@ -22,10 +27,12 @@ def register():
     
     user = new_user(data['username'])
     user['password'] = generate_password_hash(data['password'])
-    mongo.db.users.insert_one(user)
+    user_id = str(mongo.db.users.insert_one(user).inserted_id)
+    encoded_jwt = jwt.encode({ '_id' : user_id }, app.config['SECRET_KEY'], algorithm='HS256')
+    
 
     return {
-        'message': 'User created successfully',
+        'auth_token': encoded_jwt.decode('utf-8'),
     }, 201
 
 @bp.route('/login', methods=['POST'])
@@ -34,23 +41,11 @@ def login():
     user = mongo.db.users.find_one({'username': data['username']})
     
     if user is None or  not check_password_hash(user['password'], data['password']):
-        user = new_user()
-        user['isLoggedIn'] = False
+        return None, 200
 
-        return user
-    session['user_id'] = str(user['_id'])
-    user['_id'] = str(user['_id'])
-    user.pop('password')
-    user['isLoggedIn'] = True
-    return user, 200
-
-@bp.route('/logout')
-def logout():
-    session.clear()
-    return {
-        'message': 'User successfully logged out'
-    }, 200
+    encoded_jwt = jwt.encode({ '_id' : str(user['_id']) }, app.config['SECRET_KEY'], algorithm='HS256')
+    return encoded_jwt.decode('utf-8'), 200
 
 @bp.route('/')
 def hello():
-    return 'hello', 200
+    return 'hello' , 200
