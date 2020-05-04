@@ -48,10 +48,10 @@ class BananaOnStartTestCase(unittest.TestCase):
         self.app.post('/register', json={'username': TEST_USERNAME, 'password': TEST_PASSWORD})
         res = self.app.post('/login', json={'username': TEST_USERNAME, 'password': TEST_PASSWORD})
 
-        auth_token = res.data
+        res_data = res.get_json()
 
         assert res.status_code == 200
-        assert auth_token
+        assert res_data['auth_token']
 
 
 if __name__ == '__main__':
