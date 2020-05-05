@@ -1,14 +1,13 @@
 import os
 
 from flask import (
-    Blueprint, request, session
+    Blueprint, request
 )
 from flask import current_app as app
 from werkzeug.security import (
     check_password_hash, generate_password_hash
 )
 import jwt
-from bson.objectid import ObjectId
 
 from app.db.mongo import mongo
 from app.db.user import new_user

@@ -3,25 +3,12 @@ import unittest
 from werkzeug.security import check_password_hash
 
 import app as app_module
+from tests.setup import TestSetup
 
 TEST_PASSWORD = 'test_pass'
 TEST_USERNAME = 'test_user'
 
-class BananaOnStartTestCase(unittest.TestCase):
-
-    def setUp(self):
-        self.app = app_module.app.test_client()
-        app_module.app.config.from_mapping(
-            MONGO_URI="mongodb://localhost:27017/banana-test",
-            SECRET_KEY='test'
-        )
-        app_module.mongo.init_app(app_module.app)
-        app_module.mongo.db.users.drop()
-        print('init app and new DB banana-test')
-
-    def tearDown(self):
-        print("close app")
-
+class AuthenticationTestCase(TestSetup):
     def test_empty_db(self):
         res = self.app.get('/')
         assert 'hello' in str(res.data)
