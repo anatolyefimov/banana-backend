@@ -40,10 +40,15 @@ def login():
     user = mongo.db.users.find_one({'username': data['username']})
     
     if user is None or  not check_password_hash(user['password'], data['password']):
-        return None, 200
+        return {
+            'auth_token': None
+        }, 200
 
     encoded_jwt = jwt.encode({ '_id' : str(user['_id']) }, app.config['SECRET_KEY'], algorithm='HS256')
-    return encoded_jwt.decode('utf-8'), 200
+    encoded_jwt = encoded_jwt.decode('utf-8')
+    return {
+        'auth_token': encoded_jwt
+    }, 200
 
 @bp.route('/')
 def hello():
