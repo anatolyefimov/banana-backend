@@ -31,7 +31,7 @@ def register():
     
 
     return {
-        'auth_token': encoded_jwt.decode('utf-8'),
+        'access_token': encoded_jwt.decode('utf-8'),
     }, 201
 
 @bp.route('/login', methods=['POST'])
@@ -47,7 +47,7 @@ def login():
     encoded_jwt = jwt.encode({ '_id' : str(user['_id']) }, app.config['SECRET_KEY'], algorithm='HS256')
     encoded_jwt = encoded_jwt.decode('utf-8')
     return {
-        'auth_token': encoded_jwt
+        'access_token': encoded_jwt
     }, 200
 
 @bp.route('/')

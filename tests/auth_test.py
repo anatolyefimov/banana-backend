@@ -38,7 +38,7 @@ class AuthenticationTestCase(TestSetup):
         res_data = res.get_json()
 
         assert res.status_code == 200
-        assert res_data['auth_token']
+        assert res_data['access_token']
 
 
 if __name__ == '__main__':
