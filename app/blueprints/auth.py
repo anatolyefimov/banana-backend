@@ -12,8 +12,6 @@ import jwt
 from app.db.mongo import mongo
 from app.db.user import new_user
 
-
-
 bp = Blueprint('auth', __name__)
 
 @bp.route('/register', methods=['POST'])
