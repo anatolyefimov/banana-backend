@@ -18,5 +18,5 @@ jobs:
                 key: ${{ secrets.SSH_KEY }}
                 known_hosts: ${{ secrets.KNOWN_HOSTS }}
 
-            - run: git push ssh://tolya@84.201.131.59:/home/banana/backend.git master -f
+            - run: git push ${{ secrets.SERVER }} master 
               name: Deploy
