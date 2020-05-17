@@ -8,7 +8,7 @@ from app.db.mongo import mongo
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_mapping(
-        MONGO_URI="mongodb://localhost:27017/banana",
+        MONGO_URI="mongodb://localhost:27017/",
         SECRET_KEY=os.getenv('SECRET_KEY'),
 )
 

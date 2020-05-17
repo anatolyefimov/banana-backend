@@ -1,0 +1,21 @@
+version: "3"
+services:
+  python_server:
+    build: .
+    restart: always
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mongodb
+#    environment:
+#      - DB=mongodb://mongodb:27017/
+
+  mongodb:
+    image: mongo
+    container_name: "mongodb"
+    environment:
+      - MONGO_DATA_DIR=/usr/data/db/
+      - MONGO_LOG_DIR=/dev/null
+    restart: always
+    ports:
+      - "27017:27017"
