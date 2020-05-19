@@ -16,17 +16,6 @@ app.config.from_mapping(
 )
 
 mongo.init_app(app)
-from app.db.product import new_product
-app.logger.info(mongo)
-app.logger.info(mongo.db)
-app.logger.info(mongo.db.products)
-app.logger.info(mongo.db.users)
-
-product1 = new_product()
-app.logger.info(product1)
-
-mongo.db.products.insert_one(product1)
-
 app.logger.info('Initialize class PyMongo')
 try:
     os.makedirs(app.instance_path)
