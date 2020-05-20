@@ -50,4 +50,4 @@ def login():
 
 @bp.route('/')
 def hello():
-    return 'hello' , 200
+    return 'Hello, banana!' , 200
