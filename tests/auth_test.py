@@ -11,7 +11,7 @@ TEST_USERNAME = 'test_user'
 class AuthenticationTestCase(TestSetup):
     def test_empty_db(self):
         res = self.app.get('/')
-        assert 'Hello, banana!' in str(res.data)
+        assert 'Hello, banana!!!' in str(res.data)
         assert res.status_code == 200
 
     def test_registration(self):
