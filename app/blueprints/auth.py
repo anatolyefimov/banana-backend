@@ -12,7 +12,6 @@ import jwt
 from app.db.mongo import mongo
 from app.db.user import new_user
 
-
 bp = Blueprint('auth', __name__)
 
 @bp.route('/register', methods=['POST'])
@@ -38,9 +37,8 @@ def login():
     data = request.get_json()
     app.logger.info(data)
     user = mongo.db.users.find_one({'username': data['username']})
-    app.logger.info(user)
-
-    if user is None or not check_password_hash(user['password'], data['password']):
+    
+    if user is None or  not check_password_hash(user['password'], data['password']):
         return {
             'auth_token': None
         }, 200
@@ -53,4 +51,4 @@ def login():
 
 @bp.route('/')
 def hello():
-    return 'hello', 200
+    return 'Hello, banana!!!' , 200
