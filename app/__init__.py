@@ -9,8 +9,9 @@ from app.blueprints.basket import bp as basket_bp
 from app.db.mongo import mongo
 
 app = Flask(__name__, instance_relative_config=True)
+mongo_uri = os.getenv('DB') if os.getenv('DB') else 'mongodb://localhost:27017/banana'
 app.config.from_mapping(
-        MONGO_URI="mongodb://localhost:27017/banana",
+        MONGO_URI=mongo_uri,
         SECRET_KEY=os.getenv('SECRET_KEY'),
 )
 
@@ -26,6 +27,7 @@ app.logger.info(product1)
 
 mongo.db.products.insert_one(product1)
 
+app.logger.info('Initialize class PyMongo')
 try:
     os.makedirs(app.instance_path)
 except OSError:

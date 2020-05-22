@@ -1,0 +1,24 @@
+version: "3"
+services:
+  flask_server:
+    build: .
+#    restart: always
+    ports:
+      - "5000:5000"
+    environment:
+      - DB=mongodb://mongodb:27017/banana
+      - SECRET_KEY="dev"
+    depends_on:
+      - mongodb
+
+  mongodb:
+    image: mongo
+    container_name: "mongodb"
+    environment:
+      - MONGO_DATA_DIR=/usr/data/db
+      - MONGO_LOG_DIR=/dev/null
+    volumes:
+      - ./data/db:/usr/data/db
+    #    restart: always
+    ports:
+      - "27017:27017"

@@ -17,16 +17,16 @@ bp = Blueprint('auth', __name__)
 @bp.route('/register', methods=['POST'])
 def register():
     data = request.get_json()
+    app.logger.info(data)
     if mongo.db.users.find_one({'username': data['username']}):
         return {
             'message': 'This username is already taken.'
         }, 409
-    
+
     user = new_user(data['username'])
     user['password'] = generate_password_hash(data['password'])
     user_id = str(mongo.db.users.insert_one(user).inserted_id)
     encoded_jwt = jwt.encode({ '_id' : user_id }, app.config['SECRET_KEY'], algorithm='HS256')
-    
 
     return {
         'access_token': encoded_jwt.decode('utf-8'),
@@ -35,6 +35,7 @@ def register():
 @bp.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
+    app.logger.info(data)
     user = mongo.db.users.find_one({'username': data['username']})
     
     if user is None or  not check_password_hash(user['password'], data['password']):
@@ -50,4 +51,4 @@ def login():
 
 @bp.route('/')
 def hello():
-    return 'hello' , 200
+    return 'Hello, banana!!!' , 200
