@@ -34,20 +34,18 @@ def add_to_basket():
     else:
         basket_id = user['basket']
     print(basket_id)
-    basket = mongo.db.baskets.find_one({'_id': ObjectId(basket_id)})
+    basket = mongo.db.baskets.find_one({'_id': ObjectId(basket_id)})['productsIds']
     print(basket)
 
-    if basket['productsIds'] is None:
-        basket['productsIds'] = [productId]
+    if basket is None:
+        basket = [productId]
     else:
-        basket['productsIds'].append(productId)
+        basket.append(productId)
 
-    mongo.db.baskets.update_one({'_id': ObjectId(basket_id)}, {'$set': {'productsIds': basket['productsIds']}})
+    mongo.db.baskets.update_one({'_id': ObjectId(basket_id)}, {'$set': {'productsIds': basket}})
 
-    basket = mongo.db.baskets.find_one({'_id': ObjectId(basket_id)})
-    print(basket)
-    user = mongo.db.users.find_one({'_id': ObjectId(user_id)})
-    print(user)
+    updated_basket = mongo.db.baskets.find_one({'_id': ObjectId(basket_id)})
+    print(updated_basket)
 
     return 'ok', 200
 

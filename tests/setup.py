@@ -11,8 +11,12 @@ class TestSetup(unittest.TestCase):
         )
         app_module.mongo.init_app(app_module.app)
         app_module.mongo.db.users.drop()
+        app_module.mongo.db.baskets.drop()
+        app_module.mongo.db.products.drop()
         print('init app and new DB banana-test')
 
     def tearDown(self):
         app_module.mongo.db.users.drop()
+        app_module.mongo.db.baskets.drop()
+        app_module.mongo.db.products.drop()
         print("close app")
