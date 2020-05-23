@@ -45,3 +45,12 @@ class ProductsTestCase(TestSetup):
         ans1 = json.loads(res.get_json()['ans'])
         print(ans1)
         assert ans1['name'] == 'test1'
+
+    def test_create_garbage_product(self):
+        self.app.post('/create_garbage_product', json={})
+        self.app.post('/create_garbage_product', json={})
+        self.app.post('/create_garbage_product', json={})
+
+        res = self.app.get('/get_products_ids')
+        products_ids = res.get_json()['ans']
+        assert len(products_ids) == 3

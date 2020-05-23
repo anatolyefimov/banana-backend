@@ -4,6 +4,8 @@ from flask import (
 from app.db.mongo import mongo
 from bson import ObjectId, json_util
 
+from app.db.product import new_product
+
 bp = Blueprint('products', __name__)
 
 
@@ -40,4 +42,14 @@ def get_product_by_id():
 
     return {
                'ans': json_util.dumps(product)
+           }, 200
+
+
+@bp.route('/create_garbage_product', methods=['POST'])
+def create_garbage_product():
+    product1 = new_product()
+    product_id = str(mongo.db.products.insert_one(product1).inserted_id)
+
+    return {
+               'product_id': product_id
            }, 200
