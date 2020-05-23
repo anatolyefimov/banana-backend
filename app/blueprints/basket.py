@@ -10,6 +10,7 @@ from app.db.mongo import mongo
 
 bp = Blueprint('basket', __name__)
 
+
 @bp.route('/get_basket')
 def get_basket():
     pass
@@ -17,38 +18,46 @@ def get_basket():
 
 @bp.route('/add_to_basket', methods=['POST'])
 def add_to_basket():
+    '''
+    Returns: basket(dict): dict of products #e.g productId -> count
+
+    Parameters:
+        product_id(str) : id of product,that user want to basket
+        access_token(str) : identification of user
+
+    in basket save only id of product with amount
+    '''
     data = request.get_json()
-    accessToken = data['accessToken']
-    user_id = jwt.decode(accessToken, app.config['SECRET_KEY'], algorithms=['HS256'])['_id']
+    access_token = data['access_token']
+    user_id = jwt.decode(access_token, app.config['SECRET_KEY'], algorithms=['HS256'])['_id']
     user = mongo.db.users.find_one({'_id': ObjectId(user_id)})
 
-    productId = data['productId']
-    product = mongo.db.products.find_one({'_id': ObjectId(productId)})
-    print("product")
-    print(product)
+    product_id = data['product_id']
+    # don't use but for example
+    product = mongo.db.products.find_one({'_id': ObjectId(product_id)})
 
-    basket_id = None
-    if user['basket'] is None:
-        basket_id = mongo.db.baskets.insert_one(new_basket()).inserted_id
+    basket_id = user['basket']
+    if basket_id is None:
+        basket_id = str(mongo.db.baskets.insert_one(new_basket()).inserted_id)
         mongo.db.users.update_one({'_id': ObjectId(user_id)}, {'$set': {'basket': basket_id}})
-    else:
-        basket_id = user['basket']
-    print(basket_id)
-    basket = mongo.db.baskets.find_one({'_id': ObjectId(basket_id)})['productsIds']
-    print(basket)
 
+    basket = mongo.db.baskets.find_one({'_id': ObjectId(basket_id)})['products_dict']
+
+    basket = _primitive_add_in_dict(basket, product_id)
+    mongo.db.baskets.update_one({'_id': ObjectId(basket_id)}, {'$set': {'products_dict': basket}})
+
+    return {
+               'basket': basket
+           }, 200
+
+
+def _primitive_add_in_dict(basket, product_id):
     if basket is None:
-        basket = [productId]
+        basket = {product_id: 1}
     else:
-        basket.append(productId)
+        if product_id in basket:
+            basket[product_id] += 1
+        else:
+            basket[product_id] = 1
 
-    mongo.db.baskets.update_one({'_id': ObjectId(basket_id)}, {'$set': {'productsIds': basket}})
-
-    updated_basket = mongo.db.baskets.find_one({'_id': ObjectId(basket_id)})
-    print(updated_basket)
-
-    return 'ok', 200
-
-
-def create_basket():
-    mongo.db.baskets.insert_one(new_basket())
+    return basket

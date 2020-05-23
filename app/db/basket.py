@@ -1,4 +1,4 @@
 def new_basket():
     return {
-        'productsIds': None,
+        'products_dict': None,
     }
