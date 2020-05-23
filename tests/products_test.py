@@ -1,7 +1,3 @@
-import unittest
-
-from werkzeug.security import check_password_hash
-
 import app as app_module
 import json
 from app.db.product import new_product

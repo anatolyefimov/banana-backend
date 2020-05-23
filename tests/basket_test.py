@@ -1,5 +1,4 @@
 import app as app_module
-import json
 from app.db.product import new_product
 from tests.setup import TestSetup
 
