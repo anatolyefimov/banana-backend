@@ -47,7 +47,8 @@ def add_to_basket():
     mongo.db.baskets.update_one({'_id': ObjectId(basket_id)}, {'$set': {'products_dict': basket}})
 
     return {
-               'basket': basket
+               'basket': basket,
+               'total_sum': calc_total_sum(basket),
            }, 200
 
 
@@ -61,3 +62,16 @@ def _primitive_add_in_dict(basket, product_id):
             basket[product_id] = 1
 
     return basket
+
+
+def calc_total_sum(basket):
+    total_sum = 0
+    for key in basket:
+        total_sum += _get_price_by_id(key) * basket[key]
+
+    return total_sum
+
+
+def _get_price_by_id(product_id):
+    product = mongo.db.products.find_one({'_id': ObjectId(product_id)})
+    return product['price']

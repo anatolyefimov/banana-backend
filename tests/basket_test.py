@@ -27,3 +27,7 @@ class BasketTestCase(TestSetup):
         print('basket: ', basket)
         assert basket[product1_id] == 1
         assert basket[product2_id] == 2
+
+        total_sum = res2.get_json()['total_sum']
+        # 1*1 + 2*2 = 5
+        assert total_sum == 5
