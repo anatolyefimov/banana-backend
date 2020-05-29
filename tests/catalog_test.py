@@ -1,5 +1,6 @@
-import app as app_module
 import json
+
+import app as app_module
 from app.db.product import new_product
 from tests.setup import TestSetup
 
