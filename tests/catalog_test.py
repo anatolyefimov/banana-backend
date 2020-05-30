@@ -45,3 +45,13 @@ class CatalogTestCase(TestSetup):
 
         assert json.loads(ans[1])['name'] == 'tolya'
         assert json.loads(ans[2])['name'] == 'aydar'
+
+    def test_get_product_by_id(self):
+        shoes1 = new_product(name='shoes1', price=1, category='shoes')
+        shoes1_id = str(app_module.mongo.db.catalog.insert_one(shoes1).inserted_id)
+
+        product = self.app.get('/product?id=' + shoes1_id).get_json()['product']
+        product = json.loads(product)
+
+        assert product['name'] == shoes1['name']
+        assert product['price'] == shoes1['price']
