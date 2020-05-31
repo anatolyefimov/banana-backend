@@ -3,6 +3,7 @@ import os
 from flask import Flask
 from app.blueprints.auth import bp as auth_bp
 from app.blueprints.user import bp as user_bp
+from app.blueprints.catalog import bp as catalog_bp
 
 from app.db.mongo import mongo
 
@@ -22,3 +23,4 @@ except OSError:
 
 app.register_blueprint(auth_bp)
 app.register_blueprint(user_bp)
+app.register_blueprint(catalog_bp)
