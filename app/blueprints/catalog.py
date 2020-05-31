@@ -32,12 +32,22 @@ def get_products():
     return jsonify(ans), 200
 
 
-@bp.route('/product')
-def get_product_by_id():
-    product_id = request.args.get('id')
-    product = mongo.db.catalog.find_one({'_id': ObjectId(product_id)})
+@bp.route('/products')
+def get_product_by_ids():
+    """
+        put id with comma delimiter; don't put comma in the end of query string
+        Returns: list of products with specified ids.
 
-    return jsonify(json_util.dumps(product)), 200
+        /products?id=1,2 - return list of products with id=1,2
+    """
+    ids_list = request.args.get('id').split(',')
+
+    ans = []
+    for product_id in ids_list:
+        product = mongo.db.catalog.find_one({'_id': ObjectId(product_id)})
+        ans.append(json_util.dumps(product))
+
+    return jsonify(ans), 200
 
 
 @bp.route('/create_garbage_product', methods=['POST'])
