@@ -1,5 +1,5 @@
 from flask import (
-    Blueprint, request
+    Blueprint, request, jsonify
 )
 from app.db.mongo import mongo
 from bson import ObjectId, json_util
@@ -29,9 +29,7 @@ def get_products():
     for product in catalog:
         ans.append(json_util.dumps(product))
 
-    return {
-               'ans': ans
-           }, 200
+    return jsonify(ans), 200
 
 
 @bp.route('/product')
@@ -39,24 +37,21 @@ def get_product_by_id():
     product_id = request.args.get('id')
     product = mongo.db.catalog.find_one({'_id': ObjectId(product_id)})
 
-    return {
-               'product': json_util.dumps(product)
-           }, 200
+    return jsonify(json_util.dumps(product)), 200
 
 
-@bp.route('/create_garbage_product')
+@bp.route('/create_garbage_product', methods=['POST'])
 def create_garbage_product():
     """
         utils method for testing catalog and filling database
     """
-    name = request.args.get('name', default='foo')
-    category = request.args.get('category', default='shoes')
-    price = request.args.get('price', default=1, type=int)
-    image_url = request.args.get('image_url', default='')
+    data = request.get_json()
+    name = data.get('name', 'foo')
+    category = data.get('category', 'shoes')
+    price = data.get('price', 1)
+    image_url = data.get('image_url', '')
 
     product = new_product(name, category, price, image_url)
     product_id = str(mongo.db.catalog.insert_one(product).inserted_id)
 
-    return {
-               'product_id': product_id
-           }, 200
+    return jsonify(product_id), 201

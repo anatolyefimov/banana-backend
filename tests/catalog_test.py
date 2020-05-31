@@ -13,14 +13,14 @@ class CatalogTestCase(TestSetup):
         app_module.mongo.db.catalog.insert_one(product1)
         app_module.mongo.db.catalog.insert_one(product2)
 
-        prod = self.app.get('/catalog').get_json()
+        catalog = self.app.get('/catalog').get_json()
 
-        ans1 = json.loads(prod['ans'][0])
-        ans2 = json.loads(prod['ans'][1])
+        ans1 = json.loads(catalog[0])
+        ans2 = json.loads(catalog[1])
         assert ans1['name'] == 'test1' and ans1['price'] == 1
         assert ans2['name'] == 'test2' and ans2['price'] == 2
 
-    def test_catalog_by_categories(self):
+    def test_catalog_get_category(self):
         shoes1 = new_product(name='shoes1', price=1, category='shoes')
         shoes2 = new_product(name='shoes2', price=1, category='shoes')
         trousers1 = new_product(name='trousers1', price=1, category='trousers')
@@ -29,18 +29,18 @@ class CatalogTestCase(TestSetup):
         app_module.mongo.db.catalog.insert_many([shoes1, shoes2, trousers1, trousers2])
 
         shoes_catalog = self.app.get('/catalog?category=shoes')
-        shoes_catalog = shoes_catalog.get_json()['ans']
+        shoes_catalog = shoes_catalog.get_json()
 
         assert len(shoes_catalog) == 2
         for item in shoes_catalog:
             assert json.loads(item)['category'] == 'shoes'
 
     def test_create_garbage_product(self):
-        self.app.get('/create_garbage_product', json={})
-        self.app.get('/create_garbage_product?name=tolya&price=100')
-        self.app.get('/create_garbage_product?name=aydar&price=100')
+        self.app.post('/create_garbage_product', json={})
+        self.app.post('/create_garbage_product', json={'name': 'tolya', 'price': '100'})
+        self.app.post('/create_garbage_product', json={'name': 'aydar', 'price': '100'})
 
-        ans = self.app.get('/catalog').get_json()['ans']
+        ans = self.app.get('/catalog').get_json()
         assert len(ans) == 3
 
         assert json.loads(ans[1])['name'] == 'tolya'
@@ -50,7 +50,7 @@ class CatalogTestCase(TestSetup):
         shoes1 = new_product(name='shoes1', price=1, category='shoes')
         shoes1_id = str(app_module.mongo.db.catalog.insert_one(shoes1).inserted_id)
 
-        product = self.app.get('/product?id=' + shoes1_id).get_json()['product']
+        product = self.app.get('/product?id=' + shoes1_id).get_json()
         product = json.loads(product)
 
         assert product['name'] == shoes1['name']
