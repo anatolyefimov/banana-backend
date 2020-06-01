@@ -10,18 +10,23 @@ services:
       - SECRET_KEY="dev"
     depends_on:
       - mongodb
+    networks:
+      - frontend
+      - backend
 
   mongodb:
     image: mongo
     container_name: "mongodb"
     environment:
-      - MONGO_DATA_DIR=/usr/data/db
+      - MONGO_DATA_DIR=/data/db
       - MONGO_LOG_DIR=/dev/null
     volumes:
-      - mongodbdata:/usr/data/db
+      - mongodbdata:/data/db
     restart: unless-stopped
     ports:
       - "27017:27017"
+    networks:
+      - backend
 
   webserver:
     build:
@@ -41,9 +46,17 @@ services:
       - nginxdata:/var/log/nginx
     depends_on:
       - flask
+    networks:
+      - frontend
 
 volumes:
   mongodbdata:
     driver: local
   nginxdata:
     driver: local
+
+networks:
+  frontend:
+    driver: bridge
+  backend:
+    driver: bridge
