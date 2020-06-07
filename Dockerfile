@@ -4,7 +4,7 @@ WORKDIR /app
 ADD . /app
 
 RUN pip3 install -r requirements.txt
-RUN pip install gunicorn
+RUN pip3 install gunicorn
 
 EXPOSE 5000
 
