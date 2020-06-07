@@ -43,7 +43,7 @@ services:
       - "80:80"
     volumes:
       - nginxdata:/var/log/nginx
-      - /home/banana/public:/home/banana/public
+      - /public:/home/banana/public
     depends_on:
       - flask
     networks:
