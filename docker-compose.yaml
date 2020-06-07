@@ -1,8 +1,8 @@
 version: "3"
 services:
-  flask_server:
+  flask:
     build: .
-#    restart: always
+    restart: unless-stopped
     ports:
       - "5000:5000"
     environment:
@@ -10,15 +10,53 @@ services:
       - SECRET_KEY="dev"
     depends_on:
       - mongodb
+    networks:
+      - frontend
+      - backend
 
   mongodb:
     image: mongo
     container_name: "mongodb"
     environment:
-      - MONGO_DATA_DIR=/usr/data/db
+      - MONGO_DATA_DIR=/data/db
       - MONGO_LOG_DIR=/dev/null
     volumes:
-      - ./data/db:/usr/data/db
-    #    restart: always
+      - mongodbdata:/data/db
+    restart: unless-stopped
     ports:
       - "27017:27017"
+    networks:
+      - backend
+
+  webserver:
+    build:
+      context: nginx
+      dockerfile: Dockerfile
+    container_name: webserver
+    restart: unless-stopped
+    environment:
+      APP_ENV: "prod"
+      APP_NAME: "webserver"
+      APP_DEBUG: "true"
+      SERVICE_NAME: "webserver"
+    ports:
+      - "80:80"
+    volumes:
+      - nginxdata:/var/log/nginx
+      - /public:/home/banana/public
+    depends_on:
+      - flask
+    networks:
+      - frontend
+
+volumes:
+  mongodbdata:
+    driver: local
+  nginxdata:
+    driver: local
+
+networks:
+  frontend:
+    driver: bridge
+  backend:
+    driver: bridge
