@@ -20,6 +20,8 @@ services:
     environment:
       - MONGO_DATA_DIR=/data/db
       - MONGO_LOG_DIR=/dev/null
+      - MONGO_INITDB_ROOT_USERNAME=aydar
+      - MONGO_INITDB_ROOT_PASSWORD=aydar
     volumes:
       - mongodbdata:/data/db
     restart: unless-stopped
@@ -43,7 +45,7 @@ services:
       - "80:80"
     volumes:
       - nginxdata:/var/log/nginx
-      - /home/banana/public:/home/banana/public
+      - /public:/public
     depends_on:
       - flask
     networks:
