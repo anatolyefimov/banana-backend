@@ -27,14 +27,16 @@ def add_to_basket():
     product_id = data['product_id']
     user = get_user(access_token)
 
+    total_sum = user['total_sum']
     basket = user['basket']
-    basket = _primitive_add_in_dict(basket, product_id)
+    basket, total_sum = _add_product(basket, product_id, total_sum)
 
-    mongo.db.users.update_one({'_id': ObjectId(user['_id'])}, {'$set': {'basket': basket}})
+    mongo.db.users.update_one({'_id': ObjectId(user['_id'])},
+                              {'$set': {'basket': basket, 'total_sum': total_sum}})
 
     return {
                'basket': basket,
-               'total_sum': _calc_total_sum(basket),
+               'total_sum': total_sum
            }, 200
 
 
@@ -45,43 +47,41 @@ def remove_from_basket():
     product_id = data['product_id']
     user = get_user(access_token)
 
+    total_sum = user['total_sum']
     basket = user['basket']
-    basket = _primitive_remove_from_dict(basket, product_id)
+    basket, total_sum = _remove_product(basket, product_id, total_sum)
 
-    mongo.db.users.update_one({'_id': ObjectId(user['_id'])}, {'$set': {'basket': basket}})
+    mongo.db.users.update_one({'_id': ObjectId(user['_id'])},
+                              {'$set': {'basket': basket, 'total_sum': total_sum}})
 
     return {
                'basket': basket,
-               'total_sum': _calc_total_sum(basket),
+               'total_sum': total_sum
            }, 200
 
 
-def _primitive_add_in_dict(basket, product_id):
+def _add_product(basket, product_id, total_sum):
     if product_id in basket:
         basket[product_id] += 1
     else:
         basket[product_id] = 1
 
-    return basket
+    total_sum += _get_price_by_id(product_id)
+
+    return basket, total_sum
 
 
-def _calc_total_sum(basket):
-    total_sum = 0
-    for key in basket:
-        total_sum += _get_price_by_id(key) * basket[key]
-
-    return total_sum
-
-
-def _get_price_by_id(product_id):
-    product = mongo.db.catalog.find_one({'_id': ObjectId(product_id)})
-    return product['price']
-
-
-def _primitive_remove_from_dict(basket, product_id):
+def _remove_product(basket, product_id, total_sum):
     if basket[product_id] == 1:
         basket.pop(product_id, None)
     else:
         basket[product_id] -= 1
 
-    return basket
+    total_sum -= _get_price_by_id(product_id)
+
+    return basket, total_sum
+
+
+def _get_price_by_id(product_id):
+    product = mongo.db.catalog.find_one({'_id': ObjectId(product_id)})
+    return product['price']

@@ -1,3 +1,6 @@
+import jwt
+from bson import ObjectId
+
 import app as app_module
 from app.db.product import new_product
 from tests.setup import TestSetup
@@ -26,7 +29,12 @@ class BasketTestCase(TestSetup):
         # 1*1 + 2*2 = 5
         assert total_sum == 5
 
-    def test_delete_product_from_basket(self):
+        user_id = jwt.decode(access_token, app_module.app.config['SECRET_KEY'], algorithms=['HS256'])['_id']
+        user = app_module.mongo.db.users.find_one({'_id': ObjectId(user_id)})
+        assert user['total_sum'] == 5
+        assert user['basket'] == basket
+
+    def test_remove_product_from_basket(self):
         access_token, product1_id, product2_id = self._auth_preparation()
         res2 = self.app.post(
             '/remove_from_basket',
@@ -49,9 +57,8 @@ class BasketTestCase(TestSetup):
 
     def _auth_preparation(self):
         self.app.post('/register', json=credentials_json)
-        res = self.app.post('/login', json=credentials_json)
-        res_data = res.get_json()
-        access_token = res_data['access_token']
+        res = self.app.post('/login', json=credentials_json).get_json()
+        access_token = res['access_token']
 
         product1_id = str(app_module.mongo.db.catalog.insert_one(product1).inserted_id)
         product2_id = str(app_module.mongo.db.catalog.insert_one(product2).inserted_id)

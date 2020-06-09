@@ -1,5 +1,6 @@
 def new_user(username = ''):
     return {
         'username': username,
-        'basket': {}
+        'basket': {},
+        'total_sum': 0
     }
