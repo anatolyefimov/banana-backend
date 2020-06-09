@@ -29,7 +29,8 @@ class BasketTestCase(TestSetup):
         # 1*1 + 2*2 = 5
         assert total_sum == 5
 
-        user_id = jwt.decode(access_token, app_module.app.config['SECRET_KEY'], algorithms=['HS256'])['_id']
+        user_id = jwt.decode(
+            access_token, app_module.app.config['SECRET_KEY'], algorithms=['HS256'])['_id']
         user = app_module.mongo.db.users.find_one({'_id': ObjectId(user_id)})
         assert user['total_sum'] == 5
         assert user['basket'] == basket
