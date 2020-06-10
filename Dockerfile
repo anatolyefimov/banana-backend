@@ -8,4 +8,4 @@ RUN pip3 install gunicorn
 
 EXPOSE 5000
 
-CMD [ "gunicorn", "-w", "4", "--bind", "127.0.0.1:5000", "wsgi:app"]
+CMD [ "gunicorn", "-w", "4", "--bind", "0.0.0.0:5000", "wsgi:app"]
