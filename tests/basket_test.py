@@ -29,11 +29,10 @@ class BasketTestCase(TestSetup):
         # 1*1 + 2*2 = 5
         assert total_sum == 5
 
-        user_id = jwt.decode(
-            access_token, app_module.app.config['SECRET_KEY'], algorithms=['HS256'])['_id']
-        user = app_module.mongo.db.users.find_one({'_id': ObjectId(user_id)})
-        assert user['total_sum'] == 5
-        assert user['basket'] == basket
+        # check values in DB
+        basket_db, total_sum_db = self._get_basket_and_total_sum_from_db(access_token)
+        assert basket_db == basket
+        assert total_sum_db == total_sum
 
     def test_remove_product_from_basket(self):
         access_token, product1_id, product2_id = self._auth_preparation()
@@ -50,11 +49,23 @@ class BasketTestCase(TestSetup):
         res2 = self.app.post(
             '/remove_from_basket',
             json={'product_id': product1_id, 'access_token': access_token}).get_json()
-        basket = res2['basket']
-        total_sum = res2['total_sum']
+        assert not res2['basket']
+        assert res2['total_sum'] == 0
 
-        assert not basket
-        assert total_sum == 0
+        basket_db, total_sum_db = self._get_basket_and_total_sum_from_db(access_token)
+        assert not basket_db
+        assert total_sum_db == 0
+
+    def test_clear_basket(self):
+        access_token, _, _ = self._auth_preparation()
+
+        res2 = self.app.post('/clear_basket', json={'access_token': access_token}).get_json()
+        assert not res2['basket']
+        assert res2['total_sum'] == 0
+
+        basket_db, total_sum_db = self._get_basket_and_total_sum_from_db(access_token)
+        assert not basket_db
+        assert total_sum_db == 0
 
     def _auth_preparation(self):
         self.app.post('/register', json=credentials_json)
@@ -70,3 +81,11 @@ class BasketTestCase(TestSetup):
                       json={'product_id': product2_id, 'access_token': access_token})
 
         return access_token, product1_id, product2_id
+
+    @staticmethod
+    def _get_basket_and_total_sum_from_db(access_token):
+        user_id = jwt.decode(
+            access_token, app_module.app.config['SECRET_KEY'], algorithms=['HS256'])['_id']
+        user = app_module.mongo.db.users.find_one({'_id': ObjectId(user_id)})
+
+        return user['basket'], user['total_sum']

@@ -11,22 +11,22 @@ bp = Blueprint('basket', __name__)
 
 @bp.route('/add_to_basket', methods=['POST'])
 def add_to_basket():
-    '''
+    """
     Returns: basket(dict): dict of products #e.g productId -> count
              total_sum: integer
 
     Parameters:
-        product_id(str) : id of product,that user want to basket
+        product_id(str) : id of product,that user wants to add in basket
         access_token(str) : identification of user
 
-    in basket save only id of product with amount
+    in basket save only id of product with quantity
     user includes whole basket
-    '''
+    """
     data = request.get_json()
     access_token = data['access_token']
     product_id = data['product_id']
     user = get_user(access_token)
-
+    print(user)
     total_sum = user['total_sum']
     basket = user['basket']
     basket, total_sum = _add_product(basket, product_id, total_sum)
@@ -57,6 +57,21 @@ def remove_from_basket():
     return {
                'basket': basket,
                'total_sum': total_sum
+           }, 200
+
+
+@bp.route('/clear_basket', methods=['POST'])
+def clear_basket():
+    data = request.get_json()
+    access_token = data['access_token']
+    user = get_user(access_token)
+
+    mongo.db.users.update_one({'_id': ObjectId(user['_id'])},
+                              {'$set': {'basket': {}, 'total_sum': 0}})
+
+    return {
+               'basket': {},
+               'total_sum': 0
            }, 200
 
 

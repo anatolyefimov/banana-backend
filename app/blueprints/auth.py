@@ -1,5 +1,4 @@
-import os
-
+import jwt
 from flask import (
     Blueprint, request
 )
@@ -7,12 +6,12 @@ from flask import current_app as app
 from werkzeug.security import (
     check_password_hash, generate_password_hash
 )
-import jwt
 
 from app.db.mongo import mongo
 from app.db.user import new_user
 
 bp = Blueprint('auth', __name__)
+
 
 @bp.route('/register', methods=['POST'])
 def register():
@@ -32,6 +31,7 @@ def register():
         'access_token': encoded_jwt.decode('utf-8'),
     }, 201
 
+
 @bp.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
@@ -48,6 +48,7 @@ def login():
     return {
         'access_token': encoded_jwt
     }, 200
+
 
 @bp.route('/')
 def hello():
