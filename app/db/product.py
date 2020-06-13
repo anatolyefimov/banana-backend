@@ -1,7 +1,7 @@
-def new_product(name='foo', category='trousers', price=10, image_url=''):
+def new_product(title='foo', category='trousers', price=10, image=''):
     return {
-        'name': name,
+        'title': title,
         'category': category,
         'price': price,
-        'image_url': image_url,
+        'image': image,
     }

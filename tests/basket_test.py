@@ -9,8 +9,8 @@ TEST_PASSWORD = 'test_pass'
 TEST_USERNAME = 'test_user'
 credentials_json = {'username': TEST_USERNAME, 'password': TEST_PASSWORD}
 
-product1 = new_product(name='test1', price=1)
-product2 = new_product(name='test2', price=2)
+product1 = new_product(title='test1', price=1)
+product2 = new_product(title='test2', price=2)
 
 
 class BasketTestCase(TestSetup):
