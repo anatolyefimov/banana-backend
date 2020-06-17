@@ -1,9 +1,11 @@
+import json
+
+from bson import ObjectId
 from flask import (
     Blueprint, request, jsonify
 )
-from app.db.mongo import mongo
-from bson import ObjectId, json_util
 
+from app.db.mongo import mongo
 from app.db.product import new_product
 
 CATEGORIES_LIST = {'trousers', 't-shirt', 'shoes'}
@@ -27,7 +29,7 @@ def get_products():
 
     ans = []
     for product in catalog:
-        ans.append(json_util.dumps(product))
+        ans.append(json.dumps(product, default=str, ensure_ascii=False))
 
     return jsonify(ans), 200
 
@@ -45,7 +47,7 @@ def get_product_by_ids():
     ans = []
     for product_id in ids_list:
         product = mongo.db.catalog.find_one({'_id': ObjectId(product_id)})
-        ans.append(json_util.dumps(product))
+        ans.append(json.dumps(product, default=str, ensure_ascii=False))
 
     return jsonify(ans), 200
 
@@ -56,12 +58,19 @@ def create_garbage_product():
         utils method for testing catalog and filling database
     """
     data = request.get_json()
-    name = data.get('name', 'foo')
+    title = data.get('title', 'foo')
     category = data.get('category', 'shoes')
     price = data.get('price', 1)
-    image_url = data.get('image_url', '')
+    image = data.get('image', '')
 
-    product = new_product(name, category, price, image_url)
+    product = new_product(title, category, price, image)
     product_id = str(mongo.db.catalog.insert_one(product).inserted_id)
 
     return jsonify(product_id), 201
+
+
+@bp.route('/drop_db')
+def drop_db():
+    mongo.db.catalog.drop()
+
+    return 'drop', 200
