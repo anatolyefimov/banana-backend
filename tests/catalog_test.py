@@ -5,10 +5,10 @@ from app.db.product import new_product
 from tests.setup import TestSetup
 
 
-shoes1 = new_product(title='shoes1', price=1, category='shoes')
-shoes2 = new_product(title='shoes2', price=1, category='shoes')
-trousers1 = new_product(title='trousers1', price=1, category='trousers')
-trousers2 = new_product(title='trousers2', price=1, category='trousers')
+shoes1 = new_product(title='shoes1', price=1, category='Обувь')
+shoes2 = new_product(title='shoes2', price=1, category='Обувь')
+trousers1 = new_product(title='trousers1', price=1, category='Брюки')
+trousers2 = new_product(title='trousers2', price=1, category='Брюки')
 
 
 class CatalogTestCase(TestSetup):
@@ -29,12 +29,12 @@ class CatalogTestCase(TestSetup):
     def test_catalog_get_category(self):
         app_module.mongo.db.catalog.insert_many([shoes1, shoes2, trousers1, trousers2])
 
-        shoes_catalog = self.app.get('/catalog?category=shoes')
+        shoes_catalog = self.app.get('/catalog?category=Обувь')
         shoes_catalog = shoes_catalog.get_json()
 
         assert len(shoes_catalog) == 2
         for item in shoes_catalog:
-            assert json.loads(item)['category'] == 'shoes'
+            assert json.loads(item)['category'] == 'Обувь'
 
     def test_create_garbage_product(self):
         self.app.post('/create_garbage_product', json={})
