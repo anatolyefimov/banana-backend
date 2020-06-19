@@ -8,7 +8,7 @@ from flask import (
 from app.db.mongo import mongo
 from app.db.product import new_product
 
-CATEGORIES_LIST = {'trousers', 't-shirt', 'shoes'}
+CATEGORIES_LIST = {'trousers', 'shirts', 'shoes'}
 
 bp = Blueprint('catalog', __name__)
 
@@ -22,6 +22,7 @@ def get_products():
         /catalog - return all products
     """
     category = request.args.get('category')
+    print(category)
     if category in CATEGORIES_LIST:
         catalog = mongo.db.catalog.find({'category': category})
     else:
